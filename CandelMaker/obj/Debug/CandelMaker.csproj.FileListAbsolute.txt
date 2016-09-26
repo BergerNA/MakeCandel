@@ -1,0 +1,9 @@
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\bin\Debug\CandelMaker.exe.config
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\bin\Debug\CandelMaker.exe
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\bin\Debug\CandelMaker.pdb
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.csprojResolveAssemblyReference.cache
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.CandelMaker.resources
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.Properties.Resources.resources
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.csproj.GenerateResource.Cache
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.exe
+D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.pdb
