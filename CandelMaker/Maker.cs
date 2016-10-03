@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
@@ -9,52 +10,40 @@ using System.Windows.Forms;
 
 namespace CandelMaker
 {
-    enum TypeCandel { Range, Volume, Deal, None };
+    enum TypeCandel { Range, Volume, RangeMove, None };
     public class Maker
     {
         private TypeCandel candel = TypeCandel.None;
         private double setting;
         private String fileRead;
         private String fileSave;
+        private FileHelper fileHelper;
+        private StringParser parser;
 
-        Queue<Candel> Bars = new Queue<Candel>(100000);
-
-        private double close;
-        private double open;
-        private double high;
-        private double low;
-        private int date;
-        private int time;
-        private int volume;
-
-        private int prevDate = 0;
-        private int prevTime = 0;
-        private double prevclose = 0;
-        private double prevHigh = 0;
-        private double prevLow = 0;
-
+        /// <summary>
+        /// Проверка заполненности полей настройки и запуск на выполнение.
+        /// </summary>
         public void MakeCandel(Button bt)
         {
             if (setting <= 0 || candel == TypeCandel.None || fileRead == "" || fileSave == "")
             {
-                MessageBox.Show("Заполните все поля.");
+                MessageBox.Show("Fill all the fields.");
                 return;
             }
             
-            bt.Enabled = false;
             switch (candel)
             {
                     case TypeCandel.Range:
-                        RangeCandel();
-                        break;
                     case TypeCandel.Volume:
-                        VolumeCandel();
+                    case TypeCandel.RangeMove:
+                        bt.Enabled = false;
+                        Start();
+                        bt.Enabled = true;
                         break;
-                    case TypeCandel.Deal:
-                        MessageBox.Show("Необходимо реализовать.");
+                    default :
+                        MessageBox.Show("Select candel type!");
                         break;
             }
-            bt.Enabled = true;
         }
 
         public void SetCandelValue(String value)
@@ -83,8 +72,8 @@ namespace CandelMaker
                 case "Volume":
                     candel = TypeCandel.Volume;
                     break;
-                case "Deal":
-                    candel = TypeCandel.Deal;
+                case "RangeMove":
+                    candel = TypeCandel.RangeMove;
                     break;
                 default:
                     candel = TypeCandel.None;
@@ -92,136 +81,31 @@ namespace CandelMaker
             }
         }
 
-        private string[] strarray;
-        private string[] strdouble;
-        private void StrParse(String str)
+        /// <summary>
+        /// Задать тип свечи
+        /// </summary>
+        private void getCandelType()
         {
-            try
+            switch (candel)
             {
-                strarray = str.Split(',');
-                strdouble = strarray[2].Split('.');
- 
-                date = Convert.ToInt32(strarray[0]);
-                time = Convert.ToInt32(strarray[1]);
-                close = Convert.ToDouble(strdouble[0]) + Convert.ToDouble("0," + strdouble[1]);
-                volume = Convert.ToInt32(strarray[3]);
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show("Проблема со входными данными.");
-            }
-            
-        }
-
-        private void Write(FileInfo f)
-        {
-            StreamWriter w = f.AppendText();
-            while (Bars.Length() != 0)
-                w.WriteLine(Bars.Pop().ToString());
-            w.Close();
-        }
-
-        private void RangeCandel()
-        {
-            StreamReader fr = File.OpenText(fileRead);
-            string file = fileSave + "\\" + candel + "-" + setting + ".csv";
-            FileInfo f = new FileInfo(file);
-            while (true)
-            {
-                prevTime = time;
-                prevclose = close;
-                string str = fr.ReadLine();
-
-                if (str != null)
-                {
-                    StrParse(str);
-                    if (time < 100000 || date < 20100000)
+                    case TypeCandel.RangeMove:
+                    new RangeMoveCandel(setting, fileHelper, parser).getCandel();
                         break;
-                    if (prevDate != date)
-                    {
-                        if (Bars.IsEmpty())
-                            Write(f);
-                        Bars.Push(new Candel(date, prevTime, open, high, low, prevclose, volume));
-                        prevDate = date;
-                    }
-                    if (time == 100000)
-                    {
-                        open = close;
-                        high = close;
-                        low = close;
-                    }
-                    high = Math.Max(high, close);
-                    low = Math.Min(low, close);
-
-                    if (high - low >= setting)
-                    {
-                        if (Bars.IsEmpty())
-                            Write(f);
-                        Bars.Push(new Candel(date, time, open, high, low, close, volume));
-                        open = close;
-                        high = close;
-                        low = close;
-                    }
-                }
-                else break;
+                    case TypeCandel.Range:
+                        new RangeCandel(setting, fileHelper, parser).getCandel();
+                        break;
+                    case TypeCandel.Volume:
+                        new VolumeCandel(setting, fileHelper, parser).getCandel();
+                        break;
             }
-            fr.Close();
-            if (Bars.Length() > 0)
-                Write(f);
         }
 
-
-        private void VolumeCandel()
+        private void Start()
         {
-            StreamReader fr = File.OpenText(fileRead);
-            string file = fileSave + "\\" + candel + "-" + setting + ".csv";
-            FileInfo f = new FileInfo(file);
-            while (true)
-            {
-                prevTime = time;
-                prevclose = close;
-                string str = fr.ReadLine();
-
-                if (str != null)
-                {
-                    StrParse(str);
-                    if (time < 100000 || date < 20100000)
-                        break;
-                    if (prevDate != date)
-                    {
-                        if (Bars.IsEmpty())
-                            Write(f);
-                        Bars.Push(new Candel(date, prevTime, open, high, low, prevclose, volume));
-                        prevDate = date;
-                    }
-                    if (time == 100000)
-                    {
-                        open = close;
-                        high = close;
-                        low = close;
-                        prevHigh = close;
-                        prevLow = close;
-                    }
-                    high = Math.Max(high, close);
-                    low = Math.Min(low, close);
-
-                    if (high - prevHigh >= setting || prevLow - low >= setting)
-                    {
-                        if (Bars.IsEmpty())
-                            Write(f);
-                        Bars.Push(new Candel(date, prevTime, open, high, low, prevclose, volume));
-                        prevHigh = high;
-                        prevLow = low;
-                        open = close;
-                        high = close;
-                        low = close;
-                    }
-                }
-                else break;
-            }
-            fr.Close();
-            if (Bars.Length() > 0)
-                Write(f);
+            fileHelper = new FileHelper(fileRead, fileSave + "\\" + candel + "-" + setting + ".csv");
+            // TODO реализовать настройку исходных данных в GUI
+            parser = new StringParser();
+            getCandelType();
         }
     }
 }

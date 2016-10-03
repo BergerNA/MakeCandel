@@ -73,7 +73,7 @@
             this.cBCandelType.Items.AddRange(new object[] {
             "Range",
             "Volume",
-            "Deal"});
+            "RangeMove"});
             this.cBCandelType.Location = new System.Drawing.Point(172, 52);
             this.cBCandelType.Name = "cBCandelType";
             this.cBCandelType.Size = new System.Drawing.Size(121, 21);
