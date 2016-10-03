@@ -7,3 +7,6 @@ D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.Properti
 D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.csproj.GenerateResource.Cache
 D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.exe
 D:\Project-C#\CandelMaker\CandelMaker\CandelMaker\obj\Debug\CandelMaker.pdb
+D:\Project-C#\MakeCandel\CandelMaker\bin\Debug\CandelMaker.exe.config
+D:\Project-C#\MakeCandel\CandelMaker\obj\Debug\CandelMaker.exe
+D:\Project-C#\MakeCandel\CandelMaker\obj\Debug\CandelMaker.pdb
